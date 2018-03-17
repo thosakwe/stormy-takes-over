@@ -1,0 +1,23 @@
+{
+  "name": "stormy-takes-over",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thosakwe/stormy-takes-over.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/thosakwe/stormy-takes-over/issues"
+  },
+  "homepage": "https://github.com/thosakwe/stormy-takes-over#readme",
+  "dependencies": {
+    "phaser-ce": "^2.9.4",
+    "requirejs": "^2.3.5"
+  }
+}
