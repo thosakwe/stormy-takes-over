@@ -23,7 +23,11 @@ export default class OpeningDialogueState extends DialogueState {
         await this.type('SCARAMUCCI', 'STORMY-SAN!!!!!! DEFEAT THIS EVIL!!! RESTORE HONOR!!!');
         this.camera.onFadeComplete.addOnce(() => {
             menuSound.stop();
-            this.state.start('level1');
+            this.state.start('battle_intro', true, false, {
+                state: 'level1',
+                enemy: 'profiles.sessions',
+                params: {}
+            });
         });
         this.camera.fade();
     }

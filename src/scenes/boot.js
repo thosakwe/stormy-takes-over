@@ -9,12 +9,19 @@ export default class BootState extends Phaser.State {
         // Audio
         this.load.audio('sounds.menu', ['assets/sounds/menu.mp3', 'assets/sounds/menu.ogg']);
         this.load.audio('sounds.shwop', ['assets/sounds/shwop.mp3', 'assets/sounds/shwop.ogg']);
+        this.load.audio('sounds.spaceship', ['assets/sounds/spaceship.mp3', 'assets/sounds/spaceship.ogg']);
         this.load.audio('sounds.title', ['assets/sounds/title.mp3', 'assets/sounds/title.ogg']);
+        this.load.audio('sounds.whoosh', ['assets/sounds/whoosh.mp3', 'assets/sounds/whoosh.ogg']);
         
         // Images
         this.load.image('images.title', 'assets/images/title.png');
+        this.load.image('profiles.sessions', 'assets/images/profiles/sessions.png');
+        this.load.image('profiles.stormy', 'assets/images/profiles/stormy.png');
+        this.load.image('profiles.stormy_battle', 'assets/images/profiles/stormy_battle.png');
 
         // Screens
+        this.load.image('screens.battle.grass', 'assets/images/screens/battle/grass.png');
+        this.load.image('screens.battle_intro', 'assets/images/screens/battle_intro.png');
         this.load.image('screens.opening.1', 'assets/images/screens/opening/1.png');
         this.load.image('screens.opening.2', 'assets/images/screens/opening/2.png');
         this.load.image('screens.opening.3', 'assets/images/screens/opening/3.png');
@@ -44,7 +51,8 @@ export default class BootState extends Phaser.State {
 
         spacebar.onDown.addOnce(() => {
             titleMp3.stop();
-            this.state.start('opening-dialogue');
+            //this.state.start('opening-dialogue');
+            this.state.start('level1');
         });
     }
 }
