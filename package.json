@@ -15,11 +15,13 @@
   },
   "homepage": "https://github.com/thosakwe/stormy-takes-over#readme",
   "dependencies": {
+    "babel-polyfill": "^6.26.0",
     "phaser-ce": "^2.9.4",
     "requirejs": "^2.3.5"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
+    "babel-plugin-transform-async-to-generator": "^6.24.1",
     "babel-preset-env": "^1.6.1",
     "babelify": "^8.0.0",
     "browserify": "^16.1.1",

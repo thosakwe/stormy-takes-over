@@ -7,12 +7,21 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Stormy Takes Over</title>
     <style>
+        @font-face {
+            font-family: 'orange_kid';
+            src: url('assets/fonts/orange_kid-webfont.woff2') format('woff2'),
+            url('assets/fonts/orange_kid-webfont.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
         html,
         body {
             background-color: #000;
             height: 100%;
             margin: 0;
             text-align: center;
+            font-family: 'orange_kid';
         }
 
         canvas {
@@ -22,8 +31,15 @@
 </head>
 
 <body>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/phaser-ce/2.9.4/phaser.min.js"></script>
-<script src="src/main.js"></script>
+    <!--
+    TODO: Replace for prod?
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser-ce/2.9.4/phaser.min.js"></script>
+-->
+    <script src="node_modules/babel-polyfill/dist/polyfill.min.js"></script>
+    <script src="node_modules/phaser-ce/build/phaser.min.js"></script>
+    <script src="src/main.js"></script>
+    <p id="load-font" style="font-family: 'orange_kid'; height: 0px">..</p>
 </body>
 
 </html>
