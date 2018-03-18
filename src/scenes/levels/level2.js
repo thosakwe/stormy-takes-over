@@ -2,19 +2,19 @@ import BattleState from '../battle';
 import Enemy from '../../enemy';
 import { Player, Move } from '../../player';
 
-export default class Level1 extends BattleState {
+export default class Level2 extends BattleState {
     async create() {
         super.create();
         const sound = this.add.sound('sounds.spaceship', 1, true);
         sound.play();
-        await this.showImage('screens.battle.grass');
+        await this.showImage('screens.battle.darkness');
         const stormySprite = this.createStormy();
-        const sessionsSprite = this.createEnemy('profiles.sessions');
+        const sessionsSprite = this.createEnemy('profiles.trump');
 
-        this.stormy = new Player('STORMY DANIELS', 100, stormySprite, [
+        this.stormy = new Player('STORMY DANIELS', 150, stormySprite, [
             {
-                name: 'GAS-LIGHT',
-                description: 'Deals 20 dmg.\nSpread a small, incriminating rumor.',
+                name: 'COURT ORDER',
+                description: 'Deals 20 dmg.\nFiles suit against the opponent.',
                 damage: 20,
                 pp: 20
             },
@@ -28,38 +28,39 @@ export default class Level1 extends BattleState {
                 name: 'SURPRISE LAWSUIT',
                 description: 'Deals 40 dmg.\nPulls a laywer out of nowhere..',
                 damage: 40,
-                pp: 3
+                pp: 5
             },
             {
-                name: 'QUICK HEAL',
-                description: 'Heals 20 health.',
-                heal: 20,
+                name: 'MICHAEL COHEN',
+                description: 'Heals 35 health.\nCalls Trump\'s foo-ass lawyer.',
+                heal: 35,
                 pp: 2
             },
         ]);
 
-        this.enemy = new Player('JEFF SESSIONS', 150, sessionsSprite, [
+        this.enemy = new Player('DONALD TRUMP', 225, sessionsSprite, [
             {
-                name: 'POLICE BRUTALITY',
+                name: 'FIRING SPREE',
                 damage: 25,
-                pp: 15
+                pp: 50
             },
             {
-                name: 'KKKARATE CHOP',
-                damage: 15,
-                pp: 30
-            },
-            {
-                name: 'WAFFLE THE QUESTION',
+                name: 'CIRCULAR LOGIC',
                 effect: 'CONFUSED',
                 pp: 3
             },
             {
-                name: 'INSTITUTIONAL RACISM',
-                heal: 40,
+                name: 'TINY-HAND BARRAGE',
+                effect: 'CONFUSED',
+                damage: 25,
+                pp: 8
+            },
+            {
+                name: '#BUILDTHEWALL',
+                heal: 50,
                 pp: 1
             },
-        ]);
+        ], 15);
 
         await this.startLoop();
 
@@ -69,7 +70,7 @@ export default class Level1 extends BattleState {
             if (this.stormy.sprite.alive) {
                 this.state.start('sessions-dialogue');
             } else {
-                this.state.start('game-over', true, false, 'opening-dialogue');
+                this.state.start('game-over', true, false, 'sessions-dialogue');
             }
         });
 

@@ -46,11 +46,18 @@ export default class BattleState extends DialogueState {
         //console.info(text.text);
 
         const bar = hud.bar = this.add.graphics(text.right - player.health * 2, text.bottom + 5);
-        this.updateHud(hud, player, right);
 
         if (right)
             text.left = bar.left;
 
+        // Create subtitle
+        const subtitle = hud.subtitle = this.add.text(bar.left, bar.bottom + 20, ``, {
+            fill: '#fff',
+            font: 'orange_kid',
+            fontSize: '2em'
+        });
+
+        this.updateHud(hud, player, right);
         return hud;
     }
 
@@ -61,18 +68,40 @@ export default class BattleState extends DialogueState {
      * @param {boolean} right
      */
     updateHud(hud, player, right) {
-        const bar = hud.bar;
+        const bar = hud.bar, subtitle = hud.subtitle;
+        let width, x;
         bar.clear();
-        bar.beginFill(0xfff);
 
-        if (right)
-            bar.drawRect(0, 0, player.sprite.health * 2, 8);
-        else {
-            const diff = player.sprite.maxHealth - player.sprite.health;
-            bar.drawRect(diff * 2, 0, player.sprite.health * 2, 8);
+        if (player.sprite.health <= 0) {
+            subtitle.text = ``;
+
+            /*
+            if (right) {
+                subtitle.right = bar.x;
+            } else {
+                subtitle.left = bar.x + (width = (player.sprite.health * 2));
+            }
+            */
+        } else {
+            bar.beginFill(0xfff);
+
+            if (right)
+                bar.drawRect(0, 0, width = (player.sprite.health * 2), 8);
+            else {
+                const diff = player.sprite.maxHealth - player.sprite.health;
+                bar.drawRect(x = (diff * 2), 0, width = (player.sprite.health * 2), 8);
+            }
+
+            bar.endFill();
+
+            subtitle.text = `${player.sprite.health}/${player.sprite.maxHealth}`;
+
+            if (right) {
+                subtitle.right = bar.x + width;
+            } else {
+                subtitle.left = bar.x + x;
+            }
         }
-
-        bar.endFill();
     }
 
     updateAllHud() {
@@ -88,7 +117,7 @@ export default class BattleState extends DialogueState {
     createEnemy(key) {
         const sprite = this.add.sprite(600, 180, key);
         sprite.anchor.setTo(0.5, 1);
-        sprite.scale.setTo(0.5);
+        sprite.scale.setTo(0.4);
         return sprite;
     }
 
@@ -149,9 +178,20 @@ export default class BattleState extends DialogueState {
             // Create chevron.
             // Select the first item on the left.
             let selected = textItems[textItems.length > 1 ? 1 : 0];
+            let description;
 
-            function moveChevron() {
+            const moveChevron = () => {
+                const choice = choices[i];
                 selected.text = `* ${selected.text}`;
+
+                if (description)
+                    description.kill();
+
+                description = this.add.text(20, 20, choice.description, {
+                    fill: '#fff',
+                    font: 'orange_kid',
+                    fontSize: '2em'
+                });
             }
 
             moveChevron();
@@ -226,6 +266,9 @@ export default class BattleState extends DialogueState {
                 this.down.onDown.remove(moveDown);
                 this.up.onDown.remove(moveUp);
 
+                if (description)
+                    description.kill();
+
                 for (const text of textItems) {
                     text.kill();
                 }
@@ -245,7 +288,7 @@ export default class BattleState extends DialogueState {
      * @returns {Promise.<Move>}
      */
     async showMainMenu(player) {
-        this.type('What will STORMY do?', false);
+        this.type(`What will ${player.name} do?`, false);
         return await this.showMenu([
             {
                 name: 'RUN',
@@ -274,6 +317,7 @@ export default class BattleState extends DialogueState {
 
                         return {
                             name: `${move.name} (${move._pp}/${move.pp} PP)`,
+                            description: move.description,
                             callback: async () => {
                                 if (move._pp <= 0) {
                                     await this.type(`${move.name} is out of PP!`);
@@ -311,7 +355,7 @@ export default class BattleState extends DialogueState {
         }
 
         if (!this.stormy.sprite.alive) {
-            await this.type(`${this.enemy.name} has defeated STORMY!`);
+            await this.type(`${this.enemy.name} has defeated ${this.stormy.name}!`);
         } else {
             await this.type(`${this.enemy.name} was defeated!`);
         }
@@ -331,5 +375,6 @@ export default class BattleState extends DialogueState {
   * @typedef Hud
   * @type {object}
   * @property {Phaser.Text} text
+  * @property {Phaser.Text} subtitle
   * @property {Phaser.Graphics} bar
   */

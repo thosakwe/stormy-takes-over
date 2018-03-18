@@ -5,3 +5,4 @@
 * Orange Kid Font
 * https://www.dafont.com/battle-breath.font
 * https://opengameart.org/content/windy-sound-2
+* https://opengameart.org/content/2-high-quality-explosions

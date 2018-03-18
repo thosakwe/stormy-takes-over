@@ -24,7 +24,7 @@ export class Player {
      * @param {Phaser.Sprite} sprite
      * @param {Move[]} moves The moves available for the player.
      */
-    constructor(name, health, sprite, moves = []) {
+    constructor(name, health, sprite, moves = [], agility = 5) {
         this.name = name;
         this.health = health;
         this.sprite = sprite;
@@ -73,10 +73,13 @@ export class Player {
         for (const move of this.moves) {
             let score = 1;
 
-            if (move.heal && (this.sprite.maxHealth - this.sprite.health) < move.heal) {
+            if (move._pp === undefined)
+                move._pp = move.pp;
+
+            if (move.heal && !move.effect && !move.damage && ((this.sprite.maxHealth - this.sprite.health) / move.heal) < 0.5) {
                 // Don't bother healing if we are at sufficient health.
                 score = 0;
-            } else if (move.effect && opponent.effect) {
+            } else if (move.effect && !move.heal && !move.damage && opponent.effect) {
                 // Don't bother applying an effect if one is already in place.
                 score = 0;
             } else if (move._pp === 0) {
@@ -84,15 +87,29 @@ export class Player {
                 score = 0;
             } else {
                 // Prioritize strong moves.
-                score += move.damage / ~10;
+                if (move.damage)
+                    score += move.damage / 20;
+
+                // Moves with low PP get a boost.
+                if (move.pp < 5)
+                    score += 3;
+                else if (move.pp < 10)
+                    score += 2;
 
                 // Effects are also rewarded.
                 if (move.effect)
-                    score++;
+                    score += 2;
 
                 // Avoid repeating moves if possible.
-                if (move === this.lastMove)
+                if (this.lastMove && move.name === this.lastMove.name)
                     score -= 2;
+
+                // Regular moves can get a random bonus.
+                else if (score === 1) {
+                    score += ArrayUtils.getRandomItem([
+                        0, 0, 0, 0, 1, 0, 0
+                    ]);
+                }
 
                 // Give every move a chance to be chosen.
                 if (score <= 0)
@@ -101,10 +118,13 @@ export class Player {
 
             for (let i = 0; i < score; i++)
                 pool.push(move);
+
+            //console.info(move.name, score);
         }
 
         if (!pool.length)
             pool = pool.concat(this.moves);
+
 
         return this.lastMove = ArrayUtils.getRandomItem(pool);
     }
@@ -116,7 +136,7 @@ export class Player {
      * @param {Phaser.Game} game
      * @param {Function} type 
      */
-    async doMove(move, opponent, game, type) {
+    async doMove(move, opponent, game, type, heedConfused = true) {
         if (!this.sprite.alive) return;
 
         if (this.effectDuration) {
@@ -125,15 +145,17 @@ export class Player {
                 this.effect = undefined;
                 this.effectDuration = 0;
                 this.sprite.tint = Phaser.Color.WHITE;
-            } else if (move.damage || move.effect) {
+            } else if (move.damage || move.effect || move.heal) {
                 if (this.effect === 'STUNNED')
                     return await type(`${this.name} is stunned and cannot attack!`);
-                else if (this.effect === 'CONFUSED') {
-                    await type(`${this.name} is confused! Attacks might backfire.`);
+                else if (this.effect === 'CONFUSED' && move.damage) {
+                    if (heedConfused)
+                        await type(`${this.name} is confused! Attacks might backfire.`);
 
-                    if (game.rnd.between(1, 2) === 1) {
-                        await this.doMove(move, this, game, type);
-                        return this.type(this.name, `${this.name}'s attack backfired! Self-hit!`);
+                    if ((heedConfused === false) || game.rnd.between(1, 2) === 1) {
+                        await type(this.name, `${this.name}'s attack backfired! Self-hit!`);
+                        this.sprite.damage(move.damage);
+                        return;
                     }
                 } else {
                     //await type(`${JSON.stringify(move)}`);
@@ -147,18 +169,49 @@ export class Player {
         await type(`${this.name} used ${move.name}!`);
 
         if (move.damage) {
-            await opponent.takeHit(game, move.damage);
-            // TODO: Show damage
-        } else if (move.effect) {
-            if (opponent.effectDuration || game.rnd.between(1, 4) === 1) {
-                await type('It had no effect!');
+            if (game.rnd.between(1, 100) <= opponent.agility)
+                return await type(`${opponent.name} dodged the attack!`);
+
+            let damage = move.damage, r = game.rnd.between(1, 10);
+
+            if (r === 1)
+                damage *= 0.5;
+            else if (r === 10)
+                damage *= 1.5;
+
+            await opponent.takeHit(game, damage);
+
+            if (r === 1)
+                await type("It's not very effective...");
+            else if (r === 10)
+                await type("It's super effective!");
+        }
+
+        if (move.effect) {
+            if (opponent.effectDuration) {
+                if (!move.damage && !move.heal) {
+                    await type(`${opponent.name} is already ${opponent.effect}!`);
+                }
             } else {
-                opponent.effect = move.effect;
-                opponent.effectDuration = game.rnd.between(1, 3) + 1;
-                opponent.sprite.tint = blue;
-                await type(`${opponent.name} is now ${move.effect}!`);
+                let choice;
+
+                if (!move.damage && !move.heal)
+                    choice = game.rnd.between(1, 2) !== 1;
+                else choice = game.rnd.between(1, 4) === 1;
+
+                if (!choice) {
+                    if (!move.damage && !move.heal)
+                        await type('It had no effect!');
+                } else {
+                    opponent.effect = move.effect;
+                    opponent.effectDuration = game.rnd.between(1, 4) + 1;
+                    opponent.sprite.tint = blue;
+                    await type(`${opponent.name} is now ${move.effect}!`);
+                }
             }
-        } else if (move.heal) {
+        }
+
+        if (move.heal) {
             this.sprite.heal(move.heal);
             await type(`${this.name} healed ${move.heal} health!`);
         }
