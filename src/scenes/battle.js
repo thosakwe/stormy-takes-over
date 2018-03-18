@@ -1,6 +1,8 @@
 import DialogueState, { blue } from './dialogue';
 import { Player } from '../player';
 
+const green = 0x4ca433;
+
 export default class BattleState extends DialogueState {
     /**
      * @type {Player}
@@ -13,6 +15,41 @@ export default class BattleState extends DialogueState {
         this.right = this.input.keyboard.addKey(Phaser.KeyCode.RIGHT);
         this.up = this.input.keyboard.addKey(Phaser.KeyCode.UP);
         this.down = this.input.keyboard.addKey(Phaser.KeyCode.DOWN);
+    }
+
+    /**
+     * 
+     * @param {Player} player 
+     * @param {boolean} right Show HUD to the right
+     * @returns {Hud}
+     */
+    createHud(player) {
+        const hud = {};
+        let x, anchor;
+
+        if (right) {
+            x = player.sprite.centerX + 20;
+            anchor = 0;
+        } else {
+            x = player.sprite.left - 20;
+            anchor = 1;
+        }
+
+        const text = hud.text = this.add.text(x, player.sprite.top, `${player.name}`, {
+            font: 'orange_kid',
+            fontSize: '3em',
+            fill: '#fff'
+        });
+        text.anchor.x = anchor;
+        text.anchor.y = 0;
+        console.info(text.text);
+
+        const bar = hud.bar = this.add.graphics(text.left, text.bottom + 5);
+        bar.beginFill(green);
+        bar.drawRect(0, 0, text.width, 8);
+        bar.endFill();
+
+        return hud;
     }
 
     /**
@@ -224,6 +261,8 @@ export default class BattleState extends DialogueState {
 
     async startLoop() {
         await this.type(`A wild ${this.enemy.name} appeared!`);
+        this.stormyHud = this.createHud(this.stormy, true);
+        this.enemyHud = this.createHud(this.enemy);
 
         while (this.stormy.sprite.alive && this.enemy.sprite.alive) {
             let move = await this.showMainMenu(this.stormy);
@@ -255,3 +294,10 @@ export default class BattleState extends DialogueState {
  * @property {Function} callback
  * @property {Array.<Choice>} submenu
  */
+
+ /**
+  * @typedef Hud
+  * @type {object}
+  * @property {Phaser.Text} text
+  * @property {Phaser.Graphics} bar
+  */
