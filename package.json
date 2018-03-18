@@ -28,6 +28,7 @@
     "browserify": "^16.1.1",
     "gulp": "^3.9.1",
     "gulp-bro": "^1.0.3",
+    "gulp-cached": "^1.1.1",
     "gulp-htmlmin": "^4.0.0",
     "gulp-rename": "^1.2.2",
     "gulp-sourcemaps": "^2.6.4",

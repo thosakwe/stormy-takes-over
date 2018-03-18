@@ -23,33 +23,61 @@ export default class BattleState extends DialogueState {
      * @param {boolean} right Show HUD to the right
      * @returns {Hud}
      */
-    createHud(player) {
+    createHud(player, right) {
         const hud = {};
-        let x, anchor;
+        let x, anchor, y = player.sprite.top;
 
         if (right) {
-            x = player.sprite.centerX + 20;
-            anchor = 0;
+            x = this.world.right - 100;
+            y = player.sprite.centerY;
+            anchor = 1;
         } else {
             x = player.sprite.left - 20;
             anchor = 1;
         }
 
-        const text = hud.text = this.add.text(x, player.sprite.top, `${player.name}`, {
+        const text = hud.text = this.add.text(x, y, `${player.name}`, {
             font: 'orange_kid',
             fontSize: '3em',
             fill: '#fff'
         });
         text.anchor.x = anchor;
         text.anchor.y = 0;
-        console.info(text.text);
+        //console.info(text.text);
 
-        const bar = hud.bar = this.add.graphics(text.left, text.bottom + 5);
-        bar.beginFill(green);
-        bar.drawRect(0, 0, text.width, 8);
-        bar.endFill();
+        const bar = hud.bar = this.add.graphics(text.right - player.health * 2, text.bottom + 5);
+        this.updateHud(hud, player, right);
+
+        if (right)
+            text.left = bar.left;
 
         return hud;
+    }
+
+    /**
+     * 
+     * @param {Hud} hud 
+     * @param {Player} player
+     * @param {boolean} right
+     */
+    updateHud(hud, player, right) {
+        const bar = hud.bar;
+        bar.clear();
+        bar.beginFill(0xfff);
+
+        if (right)
+            bar.drawRect(0, 0, player.sprite.health * 2, 8);
+        else {
+            const diff = player.sprite.maxHealth - player.sprite.health;
+            bar.drawRect(diff * 2, 0, player.sprite.health * 2, 8);
+        }
+
+        bar.endFill();
+    }
+
+    updateAllHud() {
+        this.updateHud(this.stormyHud, this.stormy, true);
+        this.updateHud(this.enemyHud, this.enemy);
     }
 
     /**
@@ -258,7 +286,6 @@ export default class BattleState extends DialogueState {
         ]);
     }
 
-
     async startLoop() {
         await this.type(`A wild ${this.enemy.name} appeared!`);
         this.stormyHud = this.createHud(this.stormy, true);
@@ -269,12 +296,14 @@ export default class BattleState extends DialogueState {
 
             if (move) {
                 await this.stormy.doMove(move, this.enemy, this.game, this.type.bind(this));
+                this.updateAllHud();
             }
 
             move = await this.enemy.takeTurn(this.stormy);
 
             if (move) {
                 await this.enemy.doMove(move, this.stormy, this.game, this.type.bind(this));
+                this.updateAllHud();
             }
         }
 

@@ -11,7 +11,7 @@ export default class Level1 extends BattleState {
         const stormySprite = this.createStormy();
         const sessionsSprite = this.createEnemy('profiles.sessions');
 
-        this.stormy = new Player('STORMY', 100, stormySprite, [
+        this.stormy = new Player('STORMY DANIELS', 100, stormySprite, [
             {
                 name: 'GAS-LIGHT',
                 damage: 10,

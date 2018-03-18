@@ -1,4 +1,5 @@
 import { ArrayUtils } from "phaser-ce";
+import { blue } from "./scenes/dialogue";
 
 export class Player {
     /**
@@ -120,6 +121,7 @@ export class Player {
             if (this.effectDuration-- === 0) {
                 await type(`${this.name} is no longer ${this.effect}!`);
                 this.effect = undefined;
+                this.sprite.tint = 0xffffff;
             } else if (move.damage || move.effect) {
                 if (this.effect === 'STUNNED')
                     return await type(`${this.name} is stunned and cannot attack!`);
@@ -148,6 +150,7 @@ export class Player {
             } else {
                 opponent.effect = move.effect;
                 opponent.effectDuration = game.rnd.between(1, 3) + 1;
+                opponent.sprite.tint = blue;
                 await type(`${opponent.name} is now ${move.effect}!`);
             }
         } else if (move.heal) {
