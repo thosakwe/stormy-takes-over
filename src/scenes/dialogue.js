@@ -60,12 +60,14 @@ export default class DialogueState extends Phaser.State {
             hitSpaceText.anchor.setTo(1);
 
             // Wait for SPACEBAR hit
-            this.createSpacebar().onDown.addOnce(() => {
-                const shwop = this.add.sound('sounds.shwop');
-                shwop.playOnce = true;
-                shwop.play();
-                resolve();
-            });
+            if (message !== false) {
+                this.createSpacebar().onDown.addOnce(() => {
+                    const shwop = this.add.sound('sounds.shwop');
+                    shwop.playOnce = true;
+                    shwop.play();
+                    resolve();
+                });
+            }
         });
     }
 }

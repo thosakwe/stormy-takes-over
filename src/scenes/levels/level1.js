@@ -2,6 +2,7 @@ import BattleState from '../battle';
 
 export default class Level1 extends BattleState {
     async create() {
+        super.create();
         const sound = this.add.sound('sounds.spaceship', 1, true);
         sound.play();
         await this.showImage('screens.battle.grass');
