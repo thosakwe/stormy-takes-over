@@ -20,7 +20,7 @@ export default class Level1 extends BattleState {
             {
                 name: 'FLASH',
                 effect: 'STUNNED',
-                pp: 8
+                pp: 5
             },
             {
                 name: 'SURPRISE LAWSUIT',

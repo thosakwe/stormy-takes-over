@@ -117,11 +117,14 @@ export class Player {
      * @param {Function} type 
      */
     async doMove(move, opponent, game, type) {
+        if (!this.sprite.alive) return;
+
         if (this.effectDuration) {
-            if (this.effectDuration-- === 0) {
+            if (--this.effectDuration <= 0) {
                 await type(`${this.name} is no longer ${this.effect}!`);
                 this.effect = undefined;
-                this.sprite.tint = 0xffffff;
+                this.effectDuration = 0;
+                this.sprite.tint = Phaser.Color.WHITE;
             } else if (move.damage || move.effect) {
                 if (this.effect === 'STUNNED')
                     return await type(`${this.name} is stunned and cannot attack!`);
@@ -132,6 +135,8 @@ export class Player {
                         await this.doMove(move, this, game, type);
                         return this.type(this.name, `${this.name}'s attack backfired! Self-hit!`);
                     }
+                } else {
+                    //await type(`${JSON.stringify(move)}`);
                 }
             }
         }

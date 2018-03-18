@@ -217,6 +217,9 @@ export default class BattleState extends DialogueState {
             this.down.onDown.add(moveDown);
 
             this.createSpacebar().onDown.addOnce(() => {
+                const shwop = this.add.sound('sounds.shwop');
+                shwop.playOnce = true;
+                shwop.play();
                 const choice = choices[i];
                 this.left.onDown.remove(moveLeft);
                 this.right.onDown.remove(moveRight);
