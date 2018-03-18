@@ -1,7 +1,12 @@
 import DialogueState, { blue } from './dialogue';
-import { Player, Move } from '../player';
+import { Player } from '../player';
 
 export default class BattleState extends DialogueState {
+    /**
+     * @type {Player}
+     */
+    stormy;
+
     create() {
         super.create();
         this.left = this.input.keyboard.addKey(Phaser.KeyCode.LEFT);
@@ -55,16 +60,18 @@ export default class BattleState extends DialogueState {
                 pos.x = text.left - 30;
 
                 // Left-align items
-                if (n % 2 === 0) {
-                    // Left-most item
-                    if (leftX === -1)
-                        leftX = text.left;
-                    else text.left = leftX;
-                } else {
-                    // Right-most item
-                    if (rightX === -1)
-                        rightX = text.left;
-                    else text.left = rightX;
+                if (false) {
+                    if (n % 2 === 0) {
+                        // Left-most item
+                        if (leftX === -1)
+                            leftX = text.left;
+                        else text.left = leftX;
+                    } else {
+                        // Right-most item
+                        if (rightX === -1)
+                            rightX = text.left;
+                        else text.left = rightX;
+                    }
                 }
 
                 if (n++ === 1) {
@@ -156,11 +163,7 @@ export default class BattleState extends DialogueState {
                 }
 
                 if (choice.callback) {
-                    return (async () => {
-                        return resolve(await choice.callback(() => {
-                            this.showMenu(choices);
-                        }));
-                    })();
+                    return choice.callback().then(resolve);
                 } else if (choice.submenu && choice.submenu.length) {
                     return this.showMenu(choice.submenu).then(resolve);
                 }
@@ -170,28 +173,12 @@ export default class BattleState extends DialogueState {
 
     /**
      * 
-     * @param {Player} player 
+     * @param {Player} player
+     * @returns {Promise.<Move>}
      */
     async showMainMenu(player) {
         this.type('What will STORMY do?', false);
         return await this.showMenu([
-            {
-                name: 'TAUNT',
-                callback: () => this.type('STORMY', 'UMADBRO???')
-            },
-            {
-                name: 'FIGHT',
-                callback: () => {
-                    if (!player || !player.moves || !player.moves.length)
-                        return this.type('STORMY', 'STORMY has no moves available to use.');
-                    return this.showMenu(player.moves.map(move => {
-                        return {
-                            name: move.name,
-                            callback: () => move
-                        };
-                    }));
-                }
-            },
             {
                 name: 'RUN',
                 callback: async () => {
@@ -199,7 +186,7 @@ export default class BattleState extends DialogueState {
                     return await this.showMenu([
                         {
                             name: 'NO',
-                            callback: (back) => back()
+                            callback: () => this.showMainMenu(player)
                         },
                         {
                             name: 'YES',
@@ -209,32 +196,53 @@ export default class BattleState extends DialogueState {
                 }
             },
             {
-                name: 'SUE',
-                callback: () => this.type('STORMY', 'LAWSUIT POWAHH!!!!')
+                name: 'FIGHT',
+                callback: () => {
+                    if (!player || !player.moves || !player.moves.length)
+                        return this.type('STORMY', 'STORMY has no moves available to use.');
+                    return this.showMenu(player.moves.map(move => {
+                        if (move._pp === undefined)
+                            move._pp = move.pp;
+
+                        return {
+                            name: `${move.name} (${move._pp}/${move.pp} PP)`,
+                            callback: async () => {
+                                if (move._pp <= 0) {
+                                    await this.type(`${move.name} is out of PP!`);
+                                    return await this.showMainMenu(player);
+                                }
+
+                                return move;
+                            }
+                        };
+                    }));
+                }
             },
         ]);
     }
 
 
     async startLoop() {
-        await this.type('SESSIONS', `A wild ${this.enemy.name} appeared!`);
+        await this.type(`A wild ${this.enemy.name} appeared!`);
 
         while (this.stormy.sprite.alive && this.enemy.sprite.alive) {
-            /**
-             * @type Move
-             */
-            const move = await this.showMainMenu(this.stormy);
+            let move = await this.showMainMenu(this.stormy);
 
-            if (move && move.damage) {
-                await this.enemy.takeHit(this.game, move.damage);
-                await this.type('STORMY', `STORMY used ${move.name}!`);
+            if (move) {
+                await this.stormy.doMove(move, this.enemy, this.game, this.type.bind(this));
+            }
+
+            move = await this.enemy.takeTurn(this.stormy);
+
+            if (move) {
+                await this.enemy.doMove(move, this.stormy, this.game, this.type.bind(this));
             }
         }
 
         if (!this.stormy.sprite.alive) {
-            await this.type('STORMY', `${this.enemy.name} has defeated STORMY!`);
+            await this.type(`${this.enemy.name} has defeated STORMY!`);
         } else {
-            await this.type('STORMY', `${this.enemy.name} was defeated!`);
+            await this.type(`${this.enemy.name} was defeated!`);
         }
 
     }

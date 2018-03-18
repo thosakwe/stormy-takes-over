@@ -36,7 +36,7 @@ gulp.task('html', function () {
 gulp.task('javascript', function () {
   // set up the browserify instance on a task basis
   return browserify({ entries: './src/main.js', debug: true })
-    .transform('babelify', { presets: ['env'], 'plugins': ['transform-async-to-generator'] })
+    .transform('babelify', { presets: ['env'], 'plugins': ['transform-async-to-generator', 'transform-class-properties'] })
     .bundle()
     .pipe(source('src/main.js'))
     .pipe(buffer())
