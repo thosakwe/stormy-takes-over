@@ -19,6 +19,7 @@ export default class BattleState extends DialogueState {
         const sprite = this.add.sprite(600, 180, key);
         sprite.anchor.setTo(0.5, 1);
         sprite.scale.setTo(0.5);
+        return sprite;
     }
 
     /**
@@ -29,6 +30,7 @@ export default class BattleState extends DialogueState {
         const sprite = this.add.sprite(215, 460, 'profiles.stormy_battle');
         sprite.anchor.setTo(0.3, 1);
         sprite.scale.setTo(0.75);
+        return sprite;
     }
 
     /**
@@ -77,7 +79,7 @@ export default class BattleState extends DialogueState {
             let selected = textItems[textItems.length > 1 ? 1 : 0];
 
             function moveChevron() {
-                selected.text = `*${selected.text}`;
+                selected.text = `* ${selected.text}`;
             }
 
             moveChevron();
@@ -213,10 +215,28 @@ export default class BattleState extends DialogueState {
         ]);
     }
 
+
     async startLoop() {
-        while (true) {
-            await this.showMainMenu();
+        await this.type('SESSIONS', `A wild ${this.enemy.name} appeared!`);
+
+        while (this.stormy.sprite.alive && this.enemy.sprite.alive) {
+            /**
+             * @type Move
+             */
+            const move = await this.showMainMenu(this.stormy);
+
+            if (move && move.damage) {
+                await this.enemy.takeHit(this.game, move.damage);
+                await this.type('STORMY', `STORMY used ${move.name}!`);
+            }
         }
+
+        if (!this.stormy.sprite.alive) {
+            await this.type('STORMY', `${this.enemy.name} has defeated STORMY!`);
+        } else {
+            await this.type('STORMY', `${this.enemy.name} was defeated!`);
+        }
+
     }
 }
 
