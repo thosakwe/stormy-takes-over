@@ -1,8 +1,11 @@
 import GameOverState from './scenes/dialogue/game_over';
 import OpeningDialogueState from './scenes/dialogue/opening';
+import PutinDialogueState from './scenes/dialogue/putin';
 import SessionsDialogueState from './scenes/dialogue/sessions';
+import TrumpDialogueState from './scenes/dialogue/trump';
 import Level1 from './scenes/levels/level1';
 import Level2 from './scenes/levels/level2';
+import Level3 from './scenes/levels/level3';
 import BattleIntroState from './battle_intro';
 import BootState from './scenes/boot';
 
@@ -12,6 +15,9 @@ game.state.add('boot', BootState);
 game.state.add('game-over', GameOverState);
 game.state.add('level1', Level1);
 game.state.add('level2', Level2);
+game.state.add('level3', Level3);
 game.state.add('opening-dialogue', OpeningDialogueState);
+game.state.add('putin-dialogue', PutinDialogueState);
 game.state.add('sessions-dialogue', SessionsDialogueState);
+game.state.add('trump-dialogue', TrumpDialogueState);
 game.state.start('boot');

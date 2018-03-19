@@ -30,6 +30,7 @@ export class Player {
         this.sprite = sprite;
         sprite.maxHealth = sprite.health = health;
         this.moves = moves;
+        this.agility = agility;
     }
 
     /**
@@ -148,6 +149,14 @@ export class Player {
             } else if (move.damage || move.effect || move.heal) {
                 if (this.effect === 'STUNNED')
                     return await type(`${this.name} is stunned and cannot attack!`);
+                else if (this.effect === 'POISONED') {
+                    const damage = game.rnd.between(0, 2) * 5;
+
+                    if (damage > 0) {
+                        await type(`${this.name} took ${damage} damage from poison!`);
+                        await this.takeHit(game, damage);
+                    }
+                }
                 else if (this.effect === 'CONFUSED' && move.damage) {
                     if (heedConfused)
                         await type(`${this.name} is confused! Attacks might backfire.`);
@@ -169,7 +178,7 @@ export class Player {
         await type(`${this.name} used ${move.name}!`);
 
         if (move.damage) {
-            if (game.rnd.between(1, 100) <= opponent.agility)
+            if (opponent.effect !== 'STUNNED' && game.rnd.between(1, 100) <= opponent.agility)
                 return await type(`${opponent.name} dodged the attack!`);
 
             let damage = move.damage, r = game.rnd.between(1, 10);
@@ -178,6 +187,8 @@ export class Player {
                 damage *= 0.5;
             else if (r === 10)
                 damage *= 1.5;
+
+            damage = Math.round(damage);
 
             await opponent.takeHit(game, damage);
 

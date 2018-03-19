@@ -68,7 +68,7 @@ export default class Level2 extends BattleState {
             sound.stop();
 
             if (this.stormy.sprite.alive) {
-                this.state.start('sessions-dialogue');
+                this.state.start('trump-dialogue');
             } else {
                 this.state.start('game-over', true, false, 'sessions-dialogue');
             }

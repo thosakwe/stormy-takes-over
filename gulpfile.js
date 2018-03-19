@@ -18,7 +18,12 @@ const outDir = path.resolve(__dirname, 'dist');
 const assetSources = [
   'node_modules/phaser-ce/build/phaser.min.js',
   'node_modules/babel-polyfill/dist/polyfill.min.js',
-  'assets/**/*.*',
+  'assets/**/*.png',
+  'assets/**/*.mp3',
+  'assets/**/*.ogg',
+  'assets/**/*.ttf',
+  'assets/**/*.woff',
+  'assets/**/*.woff2',
   '.nojekyll'
 ];
 const htmlSources = 'index.html';

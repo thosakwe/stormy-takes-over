@@ -17,6 +17,7 @@ export default class BootState extends Phaser.State {
 
         // Images
         this.load.image('images.title', 'assets/images/title.png');
+        this.load.image('profiles.putin', 'assets/images/profiles/putin.png');
         this.load.image('profiles.sessions', 'assets/images/profiles/sessions.png');
         this.load.image('profiles.stormy', 'assets/images/profiles/stormy.png');
         this.load.image('profiles.stormy_battle', 'assets/images/profiles/stormy_battle.png');
@@ -25,19 +26,38 @@ export default class BootState extends Phaser.State {
         // Screens
         this.load.image('screens.battle.darkness', 'assets/images/screens/battle/darkness.png');
         this.load.image('screens.battle.grass', 'assets/images/screens/battle/grass.png');
+        this.load.image('screens.battle.kremlin', 'assets/images/screens/battle/kremlin.png');
         this.load.image('screens.battle_intro', 'assets/images/screens/battle_intro.png');
         this.load.image('screens.opening.1', 'assets/images/screens/opening/1.png');
         this.load.image('screens.opening.2', 'assets/images/screens/opening/2.png');
         this.load.image('screens.opening.3', 'assets/images/screens/opening/3.png');
         this.load.image('screens.opening.4', 'assets/images/screens/opening/4.png');
+        this.load.image('screens.putin.1', 'assets/images/screens/putin/1.png');
+        this.load.image('screens.putin.2', 'assets/images/screens/putin/2.png');
+        this.load.image('screens.putin.3', 'assets/images/screens/putin/3.png');
         this.load.image('screens.sessions.1', 'assets/images/screens/sessions/1.png');
         this.load.image('screens.sessions.2', 'assets/images/screens/sessions/2.png');
         this.load.image('screens.sessions.3', 'assets/images/screens/sessions/3.png');
+        this.load.image('screens.trump.1', 'assets/images/screens/trump/1.png');
+
+
+        const loadingText = this.add.text(game.world.centerX, game.world.centerY, 'Loading...', {
+            fill: '#fff',
+            font: 'orange_kid',
+            fontSize: '6em'
+        });
+        loadingText.align = 'center';
+        loadingText.anchor.setTo(0.5);
+        
+        this.load.onFileComplete.add(() => {
+            loadingText.text = `Loading...\n${this.load.progress}%`;
+        });
     }
 
     create() {
         const loader = window.document.querySelector('#load-font');
         if (loader) loader.remove();
+        this.world.killAll();
         const titleMp3 = this.add.sound('sounds.title');
         titleMp3.play('', 0, 1, true);
 
@@ -60,7 +80,7 @@ export default class BootState extends Phaser.State {
         spacebar.onDown.addOnce(() => {
             titleMp3.stop();
             this.state.start('opening-dialogue');
-            //this.state.start('level2');
+            //this.state.start('trump-dialogue');
         });
     }
 }
