@@ -59,7 +59,7 @@ gulp.task('javascript', function () {
       ]
     }))
     // Add transformation tasks to the pipeline here.
-    .pipe(uglify())
+    //.pipe(uglify())
     //.on('error', log.error)
     .pipe(sourcemaps.write('./'))
     .pipe(gulp.dest(outDir));

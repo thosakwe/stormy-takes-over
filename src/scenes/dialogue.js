@@ -52,9 +52,9 @@ export default class DialogueState extends Phaser.State {
             });
 
             // Add a prompt: [HIT SPACE]
-            const hitSpaceText = this.add.text(this.world.right - 20, this.world.bottom - 20, '[HIT SPACE]', {
-                font: text.font,
-                fontSize: '20em',
+            const hitSpaceText = this.add.text(this.world.right - 20, this.world.bottom - 20, '[SPACE/TAP]', {
+                font: 'orange_kid',
+                fontSize: '3em',
                 fill: text.fill
             });
             hitSpaceText.anchor.setTo(1);
