@@ -1,4 +1,6 @@
-export default class BootState extends Phaser.State {
+import DialogueState from './dialogue';
+
+export default class BootState extends DialogueState {
 
     preload() {
         const game = this.game;
@@ -55,6 +57,7 @@ export default class BootState extends Phaser.State {
     }
 
     create() {
+        super.create();
         const loader = window.document.querySelector('#load-font');
         if (loader) loader.remove();
         this.world.killAll();
@@ -75,9 +78,7 @@ export default class BootState extends Phaser.State {
         });
         timer.start();
 
-        const spacebar = this.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
-
-        spacebar.onDown.addOnce(() => {
+        this.createSpacebar().onDown.addOnce(() => {
             titleMp3.stop();
             this.state.start('opening-dialogue');
             //this.state.start('trump-dialogue');
