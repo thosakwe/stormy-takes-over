@@ -1,6 +1,8 @@
 # Stormy Takes Over
 ![Screenshot](screenshots/screenshot.png)
 
+[Play Live](https://thosakwe.github.io/stormy-takes-over)
+
 A Pokémon-inspired game, satirizing the current ridiculous
 drama about president Trump's sex life
 (news flash - nobody cares!).
