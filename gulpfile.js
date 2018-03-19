@@ -41,7 +41,7 @@ gulp.task('html', function () {
   return gulp
     .src(htmlSources)
     .pipe(cached('html'))
-    .pipe(htmlmin({ collapseWhitespace: true, minifyCSS: true }))
+    .pipe(htmlmin({ collapseWhitespace: true, minifyCSS: true, minifyJS: true, removeComments: true }))
     .pipe(gulp.dest(outDir));
 });
 

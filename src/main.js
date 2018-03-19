@@ -10,6 +10,7 @@ import BattleIntroState from './battle_intro';
 import BootState from './scenes/boot';
 
 const game = new Phaser.Game(800, 600, Phaser.AUTO, 'game');
+(window.adsbygoogle = window.adsbygoogle || []).push({});
 game.state.add('battle_intro', BattleIntroState);
 game.state.add('boot', BootState);
 game.state.add('game-over', GameOverState);
@@ -20,4 +21,4 @@ game.state.add('opening-dialogue', OpeningDialogueState);
 game.state.add('putin-dialogue', PutinDialogueState);
 game.state.add('sessions-dialogue', SessionsDialogueState);
 game.state.add('trump-dialogue', TrumpDialogueState);
-game.state.start('boot');
+game.state.start('boot'); 
