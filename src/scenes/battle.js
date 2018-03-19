@@ -256,11 +256,9 @@ export default class BattleState extends DialogueState {
             };
             this.down.onDown.add(moveDown);
 
-            this.createSpacebar().onDown.addOnce(() => {
-                const shwop = this.add.sound('sounds.shwop');
-                shwop.playOnce = true;
-                shwop.play();
-                const choice = choices[i];
+            const spacebar = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+
+            const applyChoice = choice => {
                 this.left.onDown.remove(moveLeft);
                 this.right.onDown.remove(moveRight);
                 this.down.onDown.remove(moveDown);
@@ -270,6 +268,7 @@ export default class BattleState extends DialogueState {
                     description.kill();
 
                 for (const text of textItems) {
+                    if (text.handler) this.input.onTap.remove(text.handler);
                     text.kill();
                 }
 
@@ -278,7 +277,37 @@ export default class BattleState extends DialogueState {
                 } else if (choice.submenu && choice.submenu.length) {
                     return this.showMenu(choice.submenu).then(resolve);
                 }
-            });
+            };
+
+            const handler = () => {
+                spacebar.onDown.remove(handler);
+                const shwop = this.add.sound('sounds.shwop');
+                shwop.playOnce = true;
+                shwop.play();
+                const choice = choices[i];
+                applyChoice(choice);
+            };
+
+            spacebar.onDown.add(handler);
+
+            for (let i = 0; i < textItems.length; i++) {
+                const textItem = textItems[i];
+                let handler;
+
+                /**
+                 * 
+                 * @param {Phaser.Pointer} ptr 
+                 */
+                function handlerFunc(ptr) {
+                    if (textItem.getBounds().contains(ptr.x, ptr.y)) {
+                        this.input.onTap.remove(handler);
+                        applyChoice(choices[i]);
+                    }
+                };
+
+                handler = textItem.handler = handlerFunc.bind(this);
+                this.input.onTap.add(handler);
+            }
         });
     }
 

@@ -2,7 +2,17 @@ export const blue = 0x145bb3;;
 
 export default class DialogueState extends Phaser.State {
     createSpacebar() {
-        return this.spacebar || (this.spacebar = this.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR));
+        const spacebar = this.spacebar || (this.spacebar = this.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR));
+        const out = { onDown: new Phaser.Signal() };
+        const handler = () => {
+            this.input.onTap.remove(handler);
+            this.spacebar.onDown.remove(handler);
+            out.onDown.dispatch();
+        };
+
+        this.input.onDown.add(handler);
+        this.spacebar.onDown.add(handler);
+        return out;
     }
 
     showImage(key) {
